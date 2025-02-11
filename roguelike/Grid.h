@@ -107,5 +107,8 @@ private:
 	int health{ 20 };
 	int lastDamage{ 0 };
 
+	int enemySpawnDistance{ 5 };
+	int enemyMax{ 4 };
+
 	std::vector<Item*> inventory;
 };
