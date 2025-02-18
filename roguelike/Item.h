@@ -3,6 +3,8 @@
 #include <vector>
 #include <iostream>
 
+class Player;
+
 enum ItemType
 {
 	armour,
@@ -28,13 +30,14 @@ public:
 	static std::string getTypeString(ItemType type);
 	static ItemType getTypeFromString(std::string type);
 
+	ItemType GetType() {
+		return _type;
+	}
+
 	Item() {}
+	virtual ~Item() {};
 protected:
 	ItemType _type{ ItemType::weapon };
-};
-
-struct Player {
-	int health{ 100 };
 };
 
 class PotionItem : public Item

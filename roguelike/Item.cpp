@@ -7,6 +7,7 @@
 
 #include "Grid.h"
 #include "Item.h"
+#include "Player.h"
 
 const char Item::itemSymbol = '$';
 
@@ -63,7 +64,7 @@ std::ostream& operator<<(std::ostream& os, const WeaponItem& item)
 	return os;
 }
 
-void PotionItem::UsePotion(Player* player)
-{
-	player->health += _healthHealed;
-}
+//void PotionItem::UsePotion(Player* player)
+//{
+//	player->GetHealth() += _healthHealed;
+//}

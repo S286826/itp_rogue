@@ -4,14 +4,15 @@
 #include <random>
 
 #include "Enemy.h"
-
+#include "Player.h"
 #include "Item.h"
 
 class Grid {
 public:
-	Grid(int rowSize, int columnSize) 
+	Grid(int rowSize, int columnSize, Player *playerPtr) 
 		: _rowSize{rowSize},
 		  _colSize{columnSize},
+		_player{playerPtr},
 			mt{rd()},
 		enemy{3, 4}
 	{
@@ -53,9 +54,7 @@ public:
 
 	void printInventory();
 	void checkInventory();
-	void updateInventory(int itemNumber, int amount);
-	int GetPlayerX();
-	int GetPlayerY();
+
 
 	int getRemainingTreasureCount() { return treasureRemaining; }
 
@@ -65,17 +64,9 @@ public:
 	static const char emptySymbol;
 	static const char exitSymbol;
 
-	void ItemCollected(int defense, int damage, int healthHealed);
-
-	
-	bool isDamaged{ false };
-	int GetDamage() { return lastDamage; }
-	void ResetDamageState();
-	int GetHealth() { return health; }
-
 private:
 	//Inventory variables
-	std::vector<int> inventory = { 0, 0, 0, 0 };
+	// std::vector<int> inventory = { 0, 0, 0, 0 };
 	std::vector<int> itemLimit = { 100, 100, 100, 100 };
 	enum invEnum { treasure, potion, weapon, armour };
 
@@ -83,12 +74,9 @@ private:
 	bool shouldPrintFullMessage{ false };
 
 	int treasureRemaining{ 0 };
-	void collectItem(int item);
 
 	void initialize_cells();
 	void generate_dungeon();
-
-	void ReceiveAttack();
 
 	std::vector< std::vector<char>> grid;
 
@@ -98,14 +86,8 @@ private:
 	int _rowSize;
 	int _colSize;
 
-	int playerX{ 0 };
-	int playerY{ 0 };
-
 	Enemy enemy;
-	Player player;
-
-	int health{ 20 };
-	int lastDamage{ 0 };
+	Player *_player;
 
 	int enemySpawnDistance{ 5 };
 	int enemyMax{ 4 };

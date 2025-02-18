@@ -20,7 +20,7 @@ void Grid::print_dungeon()
 	{
 		for (int j = 0; j < _colSize; ++j)
 		{
-			if (i == playerX && j == playerY)
+			if (i == _player->GetX() && j == _player->GetY())
 			{
 				std::cout << playerSymbol;
 			}
@@ -33,9 +33,12 @@ void Grid::print_dungeon()
 		}
 		std::cout << '\n';
 	}
+
+	printInventory();
+
 	if (shouldPrintInv)
 	{
-		printInventory();
+		
 		shouldPrintInv = false;
 	}
 	else if (shouldPrintFullMessage)
@@ -44,122 +47,98 @@ void Grid::print_dungeon()
 		shouldPrintFullMessage = false;
 	}
 
-}
 
-int Grid::GetPlayerX() 
-{
-	return this->playerX;
-}
-
-int Grid::GetPlayerY() 
-{
-	return this->playerY;
 }
 
 void Grid::moveUp()
 {
-	if ((playerX > 1) && 
-		(grid[playerX - 1][playerY] != wallSymbol))
+	if ((_player->GetX() > 1) &&
+		(grid[_player->GetX() - 1][_player->GetY()] != wallSymbol))
 	{
 		int enemyX = enemy.getX();
 		int enemyY = enemy.getY();
 
-		if (playerX - 1 == enemyX && playerY == enemyY)
+		if (_player->GetX() - 1 == enemyX && _player->GetY() == enemyY)
 		{
-			player.DoAttack();
+			// Doesn't actually do anything. 
+			_player->DoAttack(0, 0);
 		}
-		playerX--;
-		enemy.MoveTowardsPlayer(playerX, playerY, grid, _colSize, _rowSize);
-	}
-
-	this->isDamaged = enemy.CheckForPlayer(playerX, playerY);
-
-	if (isDamaged) 
-	{
-		ReceiveAttack();
+		_player->SetX(_player->GetX() - 1);
+		enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
 	}
 }
 
 void Grid::moveDown()
 {
-	if ((playerX < _rowSize - 1) &&
-		(grid[playerX + 1][playerY] != wallSymbol))
+	if ((_player->GetX() < _rowSize - 1) &&
+		(grid[_player->GetX() + 1][_player->GetY()] != wallSymbol))
 	{
 
 		int enemyX = enemy.getX();
 		int enemyY = enemy.getY();
 
-		if (playerX + 1 == enemyX && playerY == enemyY)
+		if (_player->GetX() + 1 == enemyX && _player->GetY() == enemyY)
 		{
-			player.DoAttack();
+			// Doesn't actually do anything. 
+			_player->DoAttack(0, 0);
 		}
-		playerX++;
-		enemy.MoveTowardsPlayer(playerX, playerY, grid, _colSize, _rowSize);
+		
+		_player->SetX(_player->GetX() + 1);
+		enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
 	}
-	
-	this->isDamaged = enemy.CheckForPlayer(playerX, playerY);
 
-	if (isDamaged)
-	{
-		ReceiveAttack();
-	}
 }
 
 void Grid::moveLeft()
 {
-	if ((playerY > 1) &&
-		(grid[playerX][playerY - 1] != wallSymbol))
+	if ((_player->GetY() > 1) &&
+		(grid[_player->GetX()][_player->GetY() - 1] != wallSymbol))
 	{
 		int enemyX = enemy.getX();
 		int enemyY = enemy.getY();
 
-		if (playerX == enemyX && playerY - 1 == enemyY)
+		if (_player->GetX() == enemyX && _player->GetY() - 1 == enemyY)
 		{
-			player.DoAttack();
+			// Doesn't actually do anything. 
+			_player->DoAttack(0, 0);
 		}
-		playerY--;
-		enemy.MoveTowardsPlayer(playerX, playerY, grid, _colSize, _rowSize);
-	}
-
-	this->isDamaged = enemy.CheckForPlayer(playerX, playerY);
-
-	if (isDamaged)
-	{
-		ReceiveAttack();
-	}
+		
+		_player->SetY(_player->GetY() - 1);
+		enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+	};
 }
 
 void Grid::moveRight()
 {
-	if ((playerY < _colSize - 1) &&
-		(grid[playerX][playerY + 1] != wallSymbol))
+	if ((_player->GetY() < _colSize - 1) &&
+		(grid[_player->GetX()][_player->GetY() + 1] != wallSymbol))
 	{
 		int enemyX = enemy.getX();
 		int enemyY = enemy.getY();
 
-		if (playerX == enemyX && playerY + 1 == enemyY)
+		if (_player->GetX() == enemyX && _player->GetY() + 1 == enemyY)
 		{
-			player.DoAttack();
+			// Doesn't actually do anything. 
+			_player->DoAttack(0, 0);
 		}
-		playerY++;
-		enemy.MoveTowardsPlayer(playerX, playerY, grid, _colSize, _rowSize);
-	}
-
-	this->isDamaged = enemy.CheckForPlayer(playerX, playerY);
-
-	if (isDamaged)
-	{
-		ReceiveAttack();
+		
+		_player->SetY(_player->GetY() + 1);
+		enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
 	}
 }
 
 bool Grid::checkForTreasure()
 {
-	ItemCollected(0, 0, 0);
-
-	if (grid[playerX][playerY] == treasureSymbol)
+	//ItemCollected();
+	if (grid[_player->GetX()][_player->GetY()] == Item::itemSymbol)
 	{
-		collectItem(invEnum::treasure);
+		grid[_player->GetX()][_player->GetY()] = emptySymbol;
+		_player->PickUpItem();
+	}
+
+	if (grid[_player->GetX()][_player->GetY()] == treasureSymbol)
+	{
+		_player->PickUpItem();
 		return true;
 	}
 
@@ -168,7 +147,7 @@ bool Grid::checkForTreasure()
 
 bool Grid::checkForExit()
 {
-	if (grid[playerX][playerY] == exitSymbol)
+	if (grid[_player->GetX()][_player->GetY()] == exitSymbol)
 	{
 		return true;
 	}
@@ -176,75 +155,31 @@ bool Grid::checkForExit()
 	return false;
 }
 
-void Grid::ItemCollected(int defense, int damage, int healthHealed)
-{
-	std::uniform_int_distribution<> item_dist(0, ItemType::potion);
-
-	std::uniform_int_distribution<> defense_dist(Item::minDefense, Item::maxDefense);
-	std::uniform_int_distribution<> damage_dist(Item::minDamage, Item::maxDamage);
-	std::uniform_int_distribution<> range_dist(0, Item::maxRange);
-	std::uniform_int_distribution<> heal_dist(1, Item::maxHeal);
-
-	ItemType itemType = (ItemType)item_dist(mt);
-
-	Item* newItem;
-
-	switch (itemType) {
-	case ItemType::armour:
-		newItem = new ArmourItem(defense_dist(mt));
-		std::cout << *(ArmourItem*)newItem << '\n';
-		break;
-
-	case ItemType::potion:
-		newItem = new PotionItem(heal_dist(mt));
-		std::cout << *(PotionItem*)newItem << '\n';
-		break;
-
-	default:
-	case ItemType::weapon:
-		newItem = new WeaponItem(damage_dist(mt), range_dist(mt));
-		std::cout << *(WeaponItem*)newItem << '\n';
-		break;
-	}
-
-	inventory.push_back(newItem);
-}
-
-void Grid::collectTreasure()
-{
-	grid[playerX][playerY] = emptySymbol;
-	treasureRemaining--;
-}
-
-void Grid::collectItem(int item)
-{
-	if (inventory[item] < itemLimit[item])
-	{
-		grid[playerX][playerY] = emptySymbol;
-		if (item == invEnum::treasure)
-			treasureRemaining--;
-		updateInventory(item, 1);
-	}
-	else
-		shouldPrintFullMessage = true;
-}
-
 void Grid::printInventory()
 {
-	std::cout << "Treasure = " << inventory[invEnum::treasure] << 
-		" Potions = " << inventory[invEnum::potion] <<
-		" Weapons = " << inventory[invEnum::weapon] <<
-		" Armour = " << inventory[invEnum::armour] << '\n';
-}
+	//Call inventory.GetInventory
+	auto inventoryCount = _player->GetInventoryStats();
+
+	std::cout << "armour Items: " << inventoryCount[0] << " weapon Items: " << inventoryCount[1] << " potion Items: " << inventoryCount[2] << '\n';
+ }
 
 void Grid::checkInventory()
 {
-	shouldPrintInv = true;
-}
+	int choice;
+	int equip;
 
-void Grid::updateInventory(int itemNumber, int amount)
-{
-	inventory[itemNumber] += amount;
+	std::cout << "select the item type to view: (1: armour, 2: weapons, 3: potions)\n";
+	std::cin >> choice;
+
+	if (choice == 1)
+	{
+		_player->PrintItems(ItemType::armour);
+
+		std::cout << "select the item to equip: ";
+		std::cin >> equip;
+
+		_player->EquipArmour(equip);
+	}
 }
 
 void Grid::initialize_cells()
@@ -277,11 +212,9 @@ void Grid::generate_dungeon()
 	int enemyCount = enemy_amount(mt);
 	int x = row_dist(mt);
 	int y = column_dist(mt);
-
 	int enemiesSpawned = 1;
-
-	playerX = x;
-	playerY = y;
+	_player->SetX(x);
+	_player->SetY(y);
 
 	while (stepsTaken < MaxNumberSteps
 		&& cellsConverted < MaxWalkableCells)
@@ -294,7 +227,7 @@ void Grid::generate_dungeon()
 
 		if (stepsTaken > 0 && stepsTaken % 250 == 0)
 		{
-			grid[x][y] = treasureSymbol;
+			grid[x][y] = Item::itemSymbol;
 			treasureRemaining++;
 		}
 
@@ -340,20 +273,4 @@ void Grid::generate_dungeon()
 		}
 	}
 	grid[x][y] = exitSymbol;
-}
-
-// This needs to be moved into a player class.
-void Grid::ReceiveAttack()
-{
-	// We've just taken damage from an enemy.
-	isDamaged = true; 
-
-	lastDamage = enemy.GetAttackDamage();
-	health -= lastDamage;
-}
-
-void Grid::ResetDamageState() 
-{
-	isDamaged = false;
-	lastDamage = 0;
 }

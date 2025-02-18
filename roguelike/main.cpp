@@ -1,34 +1,34 @@
 #include <iostream>
 #include <array>
-
 #include <random>
-
 #include <Windows.h>
-
 #include "Grid.h"
-
 #include "Player.h"
+#include "Enemy.h"
 
 int main()
 {
 	const int ColumnSize = 100;
 	const int RowSize = 20;
 
-	Grid grid(RowSize, ColumnSize);
 	Player player;
+	Grid grid(RowSize, ColumnSize, &player);
+
+	// Set the player reference for the Enemy class.
+	
 
 	bool isRunning{ true };
 
 	while (isRunning)
 	{
-		//system("cls");
+		system("cls");
 		grid.print_dungeon();
 
-		if (grid.isDamaged) {
-			std::cout << "You were hit for " << grid.GetDamage() << std::endl; 
+		if (player.IsDamaged()) {
+			std::cout << "You were hit for " << player.GetLastDamageAmount() << '\n'; 
 		}
 
-		if (grid.GetHealth() <= 0)
+		if (player.GetHealth() <= 0)
 		{ 
 			std::cout << "You are dead!";
 			isRunning = false;
