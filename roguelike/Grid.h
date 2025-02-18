@@ -13,8 +13,7 @@ public:
 		: _rowSize{rowSize},
 		  _colSize{columnSize},
 		_player{playerPtr},
-			mt{rd()},
-		enemy{3, 4}
+			mt{rd()}
 	{
 		initialize_cells();
 	};
@@ -54,7 +53,7 @@ public:
 
 	void printInventory();
 	void checkInventory();
-
+	void freeEnemies();
 
 	int getRemainingTreasureCount() { return treasureRemaining; }
 
@@ -86,11 +85,12 @@ private:
 	int _rowSize;
 	int _colSize;
 
-	Enemy enemy;
 	Player *_player;
 
-	int enemySpawnDistance{ 5 };
-	int enemyMax{ 4 };
+	int enemySpawnDistance{ 2 };
+	int enemyMax{ 10 };
+	int enemyMin{ 5 };
 
+	std::vector<Enemy*> enemies;
 	std::vector<Item*> inventory;
 };

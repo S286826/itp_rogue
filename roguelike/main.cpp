@@ -65,6 +65,8 @@ int main()
 			std::cout << ch << " is not a valid command\n";
 		}
 
+		grid.freeEnemies();
+
 		grid.checkForTreasure();
 		
 		if (grid.checkForExit() && grid.getRemainingTreasureCount() == 0)

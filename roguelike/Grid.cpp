@@ -24,11 +24,21 @@ void Grid::print_dungeon()
 			{
 				std::cout << playerSymbol;
 			}
-			else if (enemy.getX() == i && enemy.getY() == j) {
-				std::cout << Enemy::enemySymbol;
-			}
 			else {
-				std::cout << grid[i][j];
+				bool printGrid{ true };
+
+				for (auto enemy : enemies)
+				{
+					if (enemy->getX() == i && enemy->getY() == j)
+					{
+						std::cout << Enemy::enemySymbol;
+						printGrid = false;
+						break;
+					}
+				}
+
+				if(printGrid)
+					std::cout << grid[i][j];
 			}
 		}
 		std::cout << '\n';
@@ -55,16 +65,19 @@ void Grid::moveUp()
 	if ((_player->GetX() > 1) &&
 		(grid[_player->GetX() - 1][_player->GetY()] != wallSymbol))
 	{
-		int enemyX = enemy.getX();
-		int enemyY = enemy.getY();
+		//int enemyX = enemy.getX();
+		//int enemyY = enemy.getY();
 
-		if (_player->GetX() - 1 == enemyX && _player->GetY() == enemyY)
-		{
-			// Doesn't actually do anything. 
-			_player->DoAttack(0, 0);
-		}
+		//if (_player->GetX() - 1 == enemyX && _player->GetY() == enemyY)
+		//{
+		//	// Doesn't actually do anything. 
+		//	_player->DoAttack(0, 0);
+		//}
 		_player->SetX(_player->GetX() - 1);
-		enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		for (auto enemy : enemies) {
+			enemy->MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		}
+		//enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
 	}
 }
 
@@ -74,19 +87,21 @@ void Grid::moveDown()
 		(grid[_player->GetX() + 1][_player->GetY()] != wallSymbol))
 	{
 
-		int enemyX = enemy.getX();
-		int enemyY = enemy.getY();
+		//int enemyX = enemy.getX();
+		//int enemyY = enemy.getY();
 
-		if (_player->GetX() + 1 == enemyX && _player->GetY() == enemyY)
-		{
-			// Doesn't actually do anything. 
-			_player->DoAttack(0, 0);
-		}
+		//if (_player->GetX() + 1 == enemyX && _player->GetY() == enemyY)
+		//{
+		//	// Doesn't actually do anything. 
+		//	_player->DoAttack(0, 0);
+		//}
 		
 		_player->SetX(_player->GetX() + 1);
-		enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		for (auto enemy : enemies) {
+			enemy->MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		}
+		//enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
 	}
-
 }
 
 void Grid::moveLeft()
@@ -94,17 +109,20 @@ void Grid::moveLeft()
 	if ((_player->GetY() > 1) &&
 		(grid[_player->GetX()][_player->GetY() - 1] != wallSymbol))
 	{
-		int enemyX = enemy.getX();
-		int enemyY = enemy.getY();
+		//int enemyX = enemy.getX();
+		//int enemyY = enemy.getY();
 
-		if (_player->GetX() == enemyX && _player->GetY() - 1 == enemyY)
-		{
-			// Doesn't actually do anything. 
-			_player->DoAttack(0, 0);
-		}
+		//if (_player->GetX() == enemyX && _player->GetY() - 1 == enemyY)
+		//{
+		//	// Doesn't actually do anything. 
+		//	_player->DoAttack(0, 0);
+		//}
 		
 		_player->SetY(_player->GetY() - 1);
-		enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		//enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		for (auto enemy : enemies) {
+			enemy->MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		}
 	};
 }
 
@@ -113,17 +131,20 @@ void Grid::moveRight()
 	if ((_player->GetY() < _colSize - 1) &&
 		(grid[_player->GetX()][_player->GetY() + 1] != wallSymbol))
 	{
-		int enemyX = enemy.getX();
+		/*int enemyX = enemy.getX();
 		int enemyY = enemy.getY();
 
 		if (_player->GetX() == enemyX && _player->GetY() + 1 == enemyY)
 		{
 			// Doesn't actually do anything. 
 			_player->DoAttack(0, 0);
-		}
+		}*/
 		
 		_player->SetY(_player->GetY() + 1);
-		enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		//enemy.MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		for (auto enemy : enemies) {
+			enemy->MoveTowardsPlayer(_player->GetX(), _player->GetY(), grid, _colSize, _rowSize);
+		}
 	}
 }
 
@@ -182,6 +203,63 @@ void Grid::checkInventory()
 	}
 }
 
+void Grid::freeEnemies()
+{
+	bool enemyMoved;
+
+	do {
+		enemyMoved = false;
+		for (auto enemy : enemies)
+		{
+			for (auto other_enemy : enemies)
+			{
+				if (enemy == other_enemy) continue;
+
+				if (enemy->getX() == other_enemy->getX() &&
+					enemy->getY() == other_enemy->getY())
+				{
+					if (enemy->getX() > 2)
+					{
+						if (grid[enemy->getX() - 1][enemy->getY()] != Grid::wallSymbol)
+						{
+							other_enemy->setPosition(enemy->getX() - 1, enemy->getY());
+							enemyMoved = true;
+							continue;
+						}
+					}
+					else if (enemy->getX() < _rowSize - 2)
+					{
+						if (grid[enemy->getX() + 1][enemy->getY()] != Grid::wallSymbol)
+						{
+							other_enemy->setPosition(enemy->getX() + 1, enemy->getY());
+							enemyMoved = true;
+							continue;
+						}
+					}
+					else if (enemy->getY() > 2)
+					{
+						if (grid[enemy->getX()][enemy->getY() - 1] != Grid::wallSymbol)
+						{
+							other_enemy->setPosition(enemy->getX(), enemy->getY() - 1);
+							enemyMoved = true;
+							continue;
+						}
+					}
+					else if (enemy->getY() < _colSize - 2)
+					{
+						if (grid[enemy->getX()][enemy->getY() + 1] != Grid::wallSymbol)
+						{
+							other_enemy->setPosition(enemy->getX(), enemy->getY() + 1);
+							enemyMoved = true;
+							continue;
+						}
+					}
+				}
+			}
+		}
+	} while (enemyMoved);
+}
+
 void Grid::initialize_cells()
 {
 	grid.clear();
@@ -207,7 +285,7 @@ void Grid::generate_dungeon()
 
 	std::uniform_int_distribution<> column_dist(1, _colSize-1);
 	std::uniform_int_distribution<> row_dist(1, _rowSize-1);
-	std::uniform_int_distribution<> enemy_amount(1, enemyMax-1);
+	std::uniform_int_distribution<> enemy_amount(enemyMin, enemyMax-1);
 
 	int enemyCount = enemy_amount(mt);
 	int x = row_dist(mt);
@@ -259,15 +337,18 @@ void Grid::generate_dungeon()
 
 		stepsTaken++;
 
-		if (stepsTaken = (MaxNumberSteps/enemyCount) * enemiesSpawned 
-			&& (x > playerX + enemySpawnDistance 
-				|| x < playerX - enemySpawnDistance 
-				|| y > playerY + enemySpawnDistance 
-				|| y < playerY - enemySpawnDistance)
-			&& enemyCount > 0)
+		if (enemyCount > 0 && (stepsTaken % 250 == 0)
+			&& (x > _player->GetX() + enemySpawnDistance
+				|| x < _player->GetX() - enemySpawnDistance
+				&& y > _player->GetY() + enemySpawnDistance
+				|| y < _player->GetY() - enemySpawnDistance)
+			)
 		{
-			Enemy newEnemy;
-			newEnemy.setPosition(x, y);
+			Enemy *newEnemy = new Enemy();
+
+			std::cout << newEnemy << '\n';
+			newEnemy->setPosition(x, y);
+			enemies.push_back(newEnemy);
 			enemiesSpawned++;
 			enemyCount--;
 		}
