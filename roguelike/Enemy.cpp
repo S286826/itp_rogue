@@ -3,7 +3,7 @@
 #include "Grid.h"
 
 
-const char Enemy::enemySymbol = 'e';
+const char Enemy::enemySymbol = '!';
 
 void Enemy::MoveTowardsPlayer(int playerX, int playerY, 
 	const std::vector< std::vector<char>>& grid, int colSize, int rowSize)

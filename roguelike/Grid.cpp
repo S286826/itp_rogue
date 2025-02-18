@@ -66,7 +66,7 @@ void Grid::moveUp()
 
 		if (playerX - 1 == enemyX && playerY == enemyY)
 		{
-			//player.DoAttack();
+			player.DoAttack();
 		}
 		playerX--;
 		enemy.MoveTowardsPlayer(playerX, playerY, grid, _colSize, _rowSize);
@@ -91,7 +91,7 @@ void Grid::moveDown()
 
 		if (playerX + 1 == enemyX && playerY == enemyY)
 		{
-			//player.DoAttack();
+			player.DoAttack();
 		}
 		playerX++;
 		enemy.MoveTowardsPlayer(playerX, playerY, grid, _colSize, _rowSize);
@@ -115,7 +115,7 @@ void Grid::moveLeft()
 
 		if (playerX == enemyX && playerY - 1 == enemyY)
 		{
-			//player.DoAttack();
+			player.DoAttack();
 		}
 		playerY--;
 		enemy.MoveTowardsPlayer(playerX, playerY, grid, _colSize, _rowSize);
@@ -139,7 +139,7 @@ void Grid::moveRight()
 
 		if (playerX == enemyX && playerY + 1 == enemyY)
 		{
-			//player.DoAttack();
+			player.DoAttack();
 		}
 		playerY++;
 		enemy.MoveTowardsPlayer(playerX, playerY, grid, _colSize, _rowSize);
@@ -210,24 +210,24 @@ void Grid::ItemCollected(int defense, int damage, int healthHealed)
 	inventory.push_back(newItem);
 }
 
-//void Grid::collectTreasure()
-//{
-//	grid[playerX][playerY] = emptySymbol;
-//	treasureRemaining--;
-//}
+void Grid::collectTreasure()
+{
+	grid[playerX][playerY] = emptySymbol;
+	treasureRemaining--;
+}
 
-//void Grid::collectItem(int item)
-//{
-//	if (inventory[item] < itemLimit[item])
-//	{
-//		grid[playerX][playerY] = emptySymbol;
-//		if (item == invEnum::treasure)
-//			treasureRemaining--;
-//		updateInventory(item, 1);
-//	}
-//	else
-//		shouldPrintFullMessage = true;
-//}
+void Grid::collectItem(int item)
+{
+	if (inventory[item] < itemLimit[item])
+	{
+		grid[playerX][playerY] = emptySymbol;
+		if (item == invEnum::treasure)
+			treasureRemaining--;
+		updateInventory(item, 1);
+	}
+	else
+		shouldPrintFullMessage = true;
+}
 
 void Grid::printInventory()
 {
@@ -327,7 +327,10 @@ void Grid::generate_dungeon()
 		stepsTaken++;
 
 		if (stepsTaken = (MaxNumberSteps/enemyCount) * enemiesSpawned 
-			&& (x > playerX + enemySpawnDistance || x < playerX - enemySpawnDistance || y > playerY + enemySpawnDistance || y < playerY - enemySpawnDistance)
+			&& (x > playerX + enemySpawnDistance 
+				|| x < playerX - enemySpawnDistance 
+				|| y > playerY + enemySpawnDistance 
+				|| y < playerY - enemySpawnDistance)
 			&& enemyCount > 0)
 		{
 			Enemy newEnemy;

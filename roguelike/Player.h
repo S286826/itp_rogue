@@ -1,5 +1,5 @@
 #pragma once
-//#include "Attack.cpp"	
+#include "Attack.cpp"	
 class Player
 {
 public:
